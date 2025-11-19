@@ -986,20 +986,22 @@ namespace mbit_小车类 {
     //% blockGap=10
     //% color="#006400"
     //% name.fieldEditor="gridpicker" name.fieldOptions.columns=12
-    
+
     export function Line_Sensor(direct: enPos, value: enLineState): boolean {
         const raw = direct === enPos.LeftState ? sample(DigitalPin.P12) : sample(DigitalPin.P13)
         const seeWhite = raw < 450          // 阈值现场可调
         return seeWhite === (value === enLineState.White)
 
         /* 亮-读-灭 三合一 */
-        function sample(p: DigitalPin): number {
-            pins.digitalWritePin(p, 1)     // 点灯
-            control.waitMicros(2000)       // 2 ms
-            const val = pins.analogReadPin(<AnalogPin>p)  // 读反射
-            pins.digitalWritePin(p, 0)     // 熄灯
-            return val
-        }
+
+
+    function sample(p: AnalogPin): number {  // ✅ 改成 AnalogPin
+    pins.digitalWritePin(<DigitalPin>p, 1)  // ✅ 这里可以强转，因为 DigitalPin 是 AnalogPin 的子集
+    control.waitMicros(2000)
+    const val = pins.analogReadPin(p)       // ✅ 类型匹配
+    pins.digitalWritePin(<DigitalPin>p, 0)
+    return val
+}
     }
     //% blockId=mbit_CarCtrl block="CarCtrl|%index"
     //% weight=93
