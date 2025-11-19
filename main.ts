@@ -981,20 +981,26 @@ namespace mbit_小车类 {
     //% color="#006400"
     //% name.fieldEditor="gridpicker" name.fieldOptions.columns=12
 
+    //% blockId=mbit_Line_Sensor block="Line_Sensor|direct %direct|value %value"
+    //% weight=94
+    //% blockGap=10
+    //% color="#006400"
+    //% name.fieldEditor="gridpicker" name.fieldOptions.columns=12
+    
     export function Line_Sensor(direct: enPos, value: enLineState): boolean {
-    const raw = direct === enPos.LeftState ? sample(AnalogPin.P12) : sample(AnalogPin.P13)
-    const seeWhite = raw < 450          // 阈值现场可调
-    return seeWhite === (value === enLineState.White)
+        const raw = direct === enPos.LeftState ? sample(DigitalPin.P12) : sample(DigitalPin.P13)
+        const seeWhite = raw < 450          // 阈值现场可调
+        return seeWhite === (value === enLineState.White)
 
-    /* 亮-读-灭 三合一 */
-    function sample(p: AnalogPin): number {
-        pins.digitalWritePin(<DigitalPin>p, 1) // 点灯
-        control.waitMicros(2000)               // 2 ms
-        const val = pins.analogReadPin(p)      // 读反射
-        pins.digitalWritePin(<DigitalPin>p, 0) // 熄灯
-        return val
+        /* 亮-读-灭 三合一 */
+        function sample(p: DigitalPin): number {
+            pins.digitalWritePin(p, 1)     // 点灯
+            control.waitMicros(2000)       // 2 ms
+            const val = pins.analogReadPin(<AnalogPin>p)  // 读反射
+            pins.digitalWritePin(p, 0)     // 熄灯
+            return val
+        }
     }
-}
     //% blockId=mbit_CarCtrl block="CarCtrl|%index"
     //% weight=93
     //% blockGap=10
